@@ -1,20 +1,15 @@
-# Elliptic Curve Cryptography (ECC) Implementation
-
 def inverse_mod(k, p):
-    """Compute the modular inverse of k mod p."""
     if k == 0:
         raise ZeroDivisionError('division by zero')
     return pow(k, p - 2, p)
 
 def is_on_curve(point, a, b, p):
-    """Check if the point is on the curve."""
     if point is None:
         return True
     x, y = point
     return (y * y - (x * x * x + a * x + b)) % p == 0
 
 def point_add(point1, point2, a, p):
-    """Add two points on the elliptic curve."""
     if point1 is None:
         return point2
     if point2 is None:
@@ -27,10 +22,8 @@ def point_add(point1, point2, a, p):
         return None
 
     if x1 == x2:
-        # Point doubling
         m = (3 * x1 * x1 + a) * inverse_mod(2 * y1, p)
     else:
-        # Point addition
         m = (y2 - y1) * inverse_mod(x2 - x1, p)
 
     m = m % p
@@ -40,7 +33,6 @@ def point_add(point1, point2, a, p):
     return (x3, y3)
 
 def scalar_mult(k, point, a, p):
-    """Multiply a point by an integer k."""
     result = None
     addend = point
 
@@ -61,6 +53,10 @@ Gy = int(input("Enter Gy: "))               # e.g., 1
 G = (Gx, Gy)
 n = int(input("Enter order n: "))           # e.g., 19
 
+# Check if G is on the curve
+if not is_on_curve(G, a, b, p):
+    raise ValueError(f"Base point G{G} is not on the curve!")
+
 print("\nKey Exchange Example:")
 alpha = int(input("Enter Alice's private key alpha: ")) # e.g., 3
 beta = int(input("Enter Bob's private key beta: "))     # e.g., 9
@@ -78,9 +74,16 @@ print(f"Alice computes shared key: {KA}")
 print(f"Bob computes shared key:   {KB}")
 
 print("\nEncryption/Decryption Example:")
-Pm_x = int(input("Enter message point x: ")) # e.g., 6
-Pm_y = int(input("Enter message point y: ")) # e.g., 3
-Pm = (Pm_x, Pm_y)
+
+# Loop until a valid message point is entered
+while True:
+    Pm_x = int(input("Enter message point x: ")) # e.g., 6
+    Pm_y = int(input("Enter message point y: ")) # e.g., 3
+    Pm = (Pm_x, Pm_y)
+    if is_on_curve(Pm, a, b, p):
+        break
+    else:
+        print(f"Point {Pm} is NOT on the curve. Please enter a valid point.")
 
 alpha_enc = int(input("Enter sender's private key alpha (for encryption): ")) # e.g., 2
 beta_enc = int(input("Enter receiver's private key beta (for encryption): ")) # e.g., 3
@@ -96,7 +99,6 @@ print(f"Ciphertext Cm = {{{C1}, {C2}}}")
 
 # Decryption
 betaC1 = scalar_mult(beta_enc, C1, a, p)
-# Inverse of betaC1
 inv_betaC1 = (betaC1[0], (-betaC1[1]) % p)
 Pm_decrypted = point_add(C2, inv_betaC1, a, p)
 print(f"Decrypted message point: {Pm_decrypted}")
