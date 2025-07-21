@@ -1,7 +1,4 @@
 def main():
-    print("Elliptic Curve Cryptography Implementation")
-    print("========================================\n")
-    
     p = int(input("Enter the value of p of Ep(a,b): "))
     a = int(input("Enter the value of a of Ep(a,b): "))
     b = int(input("Enter the value of b of Ep(a,b): "))
@@ -15,25 +12,21 @@ def main():
     print("Key Exchange Phase:")
     print("------------------")
     
-    # Alice's key generation
-    alpha = int(input("\nEnter Alice's private key α (1 ≤ α ≤ n-1): "))
+    alpha = int(input("\nEnter Alice's private key alpha (1 ≤ alpha ≤ n-1): "))
     pa = point_multiply(alpha, g, a, p)
-    print(f"Alice's public key P_A = αG = {pa}")
+    print(f"Alice's public key P_A = alpha*G = {pa}")
 
-    # Bob's key generation
-    beta = int(input("Enter Bob's private key β (1 ≤ β ≤ n-1): "))
+    beta = int(input("Enter Bob's private key beta (1 ≤ beta ≤ n-1): "))
     pb = point_multiply(beta, g, a, p)
-    print(f"Bob's public key P_B = βG = {pb}\n")
+    print(f"Bob's public key P_B = beta*G = {pb}\n")
 
-    # Shared key computation
     alice_shared_key = point_multiply(alpha, pb, a, p)
     bob_shared_key = point_multiply(beta, pa, a, p)
     
-    print(f"Alice computes shared key: αP_B = {alice_shared_key}")
-    print(f"Bob computes shared key: βP_A = {bob_shared_key}")
+    print(f"Alice computes shared key: alpha*P_B = {alice_shared_key}")
+    print(f"Bob computes shared key: beta*P_A = {bob_shared_key}")
     print("Key exchange successful!" if alice_shared_key == bob_shared_key else "Key exchange failed!")
     
-    # ========== Encryption/Decryption ==========
     print("\nEncryption/Decryption Phase:")
     print("---------------------------")
     
@@ -41,7 +34,7 @@ def main():
     pm = get_valid_point(p, a, b, "\nEnter message point P_m to encrypt (format: x,y): ")
     
     # Alice's encryption
-    alpha_enc = int(input("Enter Alice's random integer α for encryption: "))
+    alpha_enc = int(input("Enter Alice's random integer alpha for encryption: "))
     c1 = point_multiply(alpha_enc, g, a, p)
     alpha_pb = point_multiply(alpha_enc, pb, a, p)
     c2 = point_add(pm, alpha_pb, a, p)
