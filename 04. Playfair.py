@@ -1,8 +1,6 @@
 def prepare_input(text):
-    # Convert to uppercase and remove non-letters
     text = ''.join(filter(str.isalpha, text.upper()))
 
-    # Replace J with I
     text = text.replace('J', 'I')
 
     # Create digraphs (pairs)

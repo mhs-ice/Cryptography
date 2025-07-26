@@ -1,5 +1,4 @@
 import random
-import math
 from math import gcd
 
 def is_prime(n, k=5):
@@ -58,12 +57,15 @@ def modinv(a, m):
 def generate_keys(bits=64):
     """Generate RSA public and private keys"""
     # Choose two large primes
-    p = generate_prime(bits // 2)
-    q = generate_prime(bits // 2)
+    # p = generate_prime(bits // 2)
+    # q = generate_prime(bits // 2)
+
+    p=int(input("Enter the value of p"))
+    q=int(input("Enter the value of q"))
     
     # Ensure p and q are different
-    while p == q:
-        q = generate_prime(bits // 2)
+    # while p == q:
+    #     q = generate_prime(bits // 2)
     
     n = p * q
     phi = (p - 1) * (q - 1)
