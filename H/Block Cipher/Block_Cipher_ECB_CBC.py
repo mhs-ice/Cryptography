@@ -49,15 +49,14 @@ def cbc_decrypt(cipher_binary, key, iv, block_size):
 
 # Convert encrypted binary to Cipher Text
 def binary_to_cipher_text(binary):
-    padded = pad_binary(binary, 8)
-    return binary_to_text(padded)
+    return binary_to_text(binary)
 
 def cipher_text_to_binary(cipher_text):
     return text_to_binary(cipher_text)
 
 # Main Code
 if __name__ == "__main__":
-    message ="Information and Communication Enginering"
+    message ="IC"
     block_size = 10
     key = '1010101010'
     iv = '1110001110'

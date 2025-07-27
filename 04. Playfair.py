@@ -48,26 +48,26 @@ def find_position(matrix, letter):
     return None
 
 def encrypt_pair(pair, matrix):
-    a_row, a_col = find_position(matrix, pair[0])
-    b_row, b_col = find_position(matrix, pair[1])
+    r1, c1 = find_position(matrix, pair[0])
+    c1, c2 = find_position(matrix, pair[1])
 
-    if a_row == b_row:
-        return matrix[a_row][(a_col + 1) % 5] + matrix[b_row][(b_col + 1) % 5]
-    elif a_col == b_col:
-        return matrix[(a_row + 1) % 5][a_col] + matrix[(b_row + 1) % 5][b_col]
+    if r1 == c1:
+        return matrix[r1][(c1 + 1) % 5] + matrix[c1][(c2 + 1) % 5]
+    elif c1 == c2:
+        return matrix[(r1 + 1) % 5][c1] + matrix[(c1 + 1) % 5][c2]
     else:
-        return matrix[a_row][b_col] + matrix[b_row][a_col]
+        return matrix[r1][c2] + matrix[c1][c1]
 
 def decrypt_pair(pair, matrix):
-    a_row, a_col = find_position(matrix, pair[0])
-    b_row, b_col = find_position(matrix, pair[1])
+    r1, c1 = find_position(matrix, pair[0])
+    c1, c2 = find_position(matrix, pair[1])
 
-    if a_row == b_row:
-        return matrix[a_row][(a_col - 1) % 5] + matrix[b_row][(b_col - 1) % 5]
-    elif a_col == b_col:
-        return matrix[(a_row - 1) % 5][a_col] + matrix[(b_row - 1) % 5][b_col]
+    if r1 == c1:
+        return matrix[r1][(c1 - 1) % 5] + matrix[c1][(c2 - 1) % 5]
+    elif c1 == c2:
+        return matrix[(r1 - 1) % 5][c1] + matrix[(c1 - 1) % 5][c2]
     else:
-        return matrix[a_row][b_col] + matrix[b_row][a_col]
+        return matrix[r1][c2] + matrix[c1][c1]
 
 def playfair_encrypt(plaintext, key):
     matrix = create_matrix(key)
