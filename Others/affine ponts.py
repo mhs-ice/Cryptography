@@ -1,5 +1,4 @@
 def find_affine_points(a, b, p):
-    """Find all affine points (x, y) on the elliptic curve y² ≡ x³ + a x + b (mod p)."""
     points = []
     for x in range(p):
         y_squared = (x**3 + a * x + b) % p

@@ -47,11 +47,11 @@ def main():
     print("\nEncryption/Decryption Phase:")
     print("---------------------------")
 
-    pm = get_valid_point(p, a, b, "\nEnter message point P_m to encrypt (format: x,y): ")
+    pm = get_valid_point(p, a, b)
 
-    alpha_enc = int(input("Enter Alice's random integer alpha for encryption: "))
-    c1 = point_multiply(alpha_enc, g, a, p)
-    alpha_pb = point_multiply(alpha_enc, pb, a, p)
+    # alpha_enc = int(input("Enter Alice's random integer alpha for encryption: "))
+    c1 = point_multiply(alpha, g, a, p)
+    alpha_pb = point_multiply(alpha, pb, a, p)
     c2 = point_add(pm, alpha_pb, a, p)
     ciphertext = (c1, c2)
 
@@ -66,7 +66,6 @@ def main():
     print("Decryption successful!" if decrypted == pm else "Decryption failed!")
 
 def point_add(P, Q, a, p):
-    """Add two points P and Q on the elliptic curve y² = x³ + ax + b mod p"""
     if P == 'O':
         return Q
     if Q == 'O':
@@ -83,13 +82,12 @@ def point_add(P, Q, a, p):
     else:
         m = ((3 * x1 * x1 + a) * pow(2 * y1, -1, p)) % p
 
-    x3 = (m * m - x1 - x2) % p
-    y3 = (m * (x1 - x3) - y1) % p
+    x_r = (m * m - x1 - x2) % p
+    y_r = (m * (x1 - x_r) - y1) % p
 
-    return (x3, y3)
+    return (x_r, y_r)
 
 def point_multiply(k, point, a, p):
-    """Multiply a point by scalar k using the double-and-add method"""
     result = 'O'
     addend = point
 
@@ -102,17 +100,15 @@ def point_multiply(k, point, a, p):
     return result
 
 def is_point_on_curve(point, a, b, p):
-    """Check if a point lies on the elliptic curve y² ≡ x³ + ax + b (mod p)"""
     if point == 'O':
         return True
     x, y = point
     return (y ** 2) % p == (x ** 3 + a * x + b) % p
 
-def get_valid_point(p, a, b, prompt="Enter point (format: x,y): "):
-    """Get and validate a point on the curve"""
+def get_valid_point(p, a, b):
     while True:
         try:
-            point_input = input(prompt)
+            point_input = input("Enter the message point Pm :")
             x, y = map(int, point_input.split(','))
             if is_point_on_curve((x, y), a, b, p):
                 return (x, y)
