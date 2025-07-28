@@ -15,29 +15,29 @@ def xor_bits(a, b):
 def split_into_blocks(binary, block_size):
     return [binary[i:i+block_size] for i in range(0, len(binary), block_size)]
 
-def cbc_encrypt(message, key, iv, block_size):
+def cfb_encrypt(message, key, iv, block_size):
     binary_data = text_to_binary(message)
     original_len = len(binary_data)
     padded = pad_binary(binary_data, block_size)
     blocks = split_into_blocks(padded, block_size)
     ciphertext = []
-    prev = iv
+    feedback = iv
     for block in blocks:
-        xored = xor_bits(block, prev)
-        encrypted = xor_bits(xored, key)
-        ciphertext.append(encrypted)
-        prev = encrypted
+        encrypted_feedback = xor_bits(feedback, key)
+        cipher_block = xor_bits(block, encrypted_feedback)
+        ciphertext.append(cipher_block)
+        feedback = cipher_block
     return ''.join(ciphertext), original_len
 
-def cbc_decrypt(cipher_binary, key, iv, block_size, original_len):
+def cfb_decrypt(cipher_binary, key, iv, block_size, original_len):
     blocks = split_into_blocks(cipher_binary, block_size)
     plaintext = []
-    prev = iv
+    feedback = iv
     for block in blocks:
-        decrypted = xor_bits(block, key)
-        original = xor_bits(decrypted, prev)
-        plaintext.append(original)
-        prev = block
+        encrypted_feedback = xor_bits(feedback, key)
+        plain_block = xor_bits(block, encrypted_feedback)
+        plaintext.append(plain_block)
+        feedback = block
     binary = ''.join(plaintext)
     return binary_to_text(binary[:original_len])
 
@@ -48,6 +48,6 @@ if __name__ == "__main__":
     iv = '1110001110'
 
     print("Original Message:", message)
-    cipher, length = cbc_encrypt(message, key, iv, block_size)
+    cipher, length = cfb_encrypt(message, key, iv, block_size)
     print("Encrypted Text:", binary_to_text(pad_binary(cipher, 8)))
-    print("Decrypted Text:", cbc_decrypt(cipher, key, iv, block_size, length))
+    print("Decrypted Text:", cfb_decrypt(cipher, key, iv, block_size, length))

@@ -36,9 +36,11 @@ def generate_keypair(p, q):
     n = p * q
     phi = (p - 1) * (q - 1)
 
-    e = random.randrange(2, phi)
-    while gcd(e, phi) != 1:
-        e = random.randrange(2, phi)
+    # e = random.randrange(2, phi)
+    # while gcd(e, phi) != 1:
+    #     e = random.randrange(2, phi)
+
+    e = int(input("Enter e : "))
     d = mod_inverse(e, phi)
     return ((e, n), (d, n))
 
@@ -62,7 +64,7 @@ print(f"Private key: {private}")
 message = input("Enter your message : ")
 
 encrypted_msg = encrypt(public, message)
-print(f"\nDecrypted message: {encrypted_msg}")
+print(f"\Encrypted message: {encrypted_msg}")
 
 decrypted_msg = decrypt(private, encrypted_msg)
 print(f"\nDecrypted message: {decrypted_msg}")

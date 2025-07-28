@@ -5,9 +5,6 @@ def main():
     g_input = input("Enter the generator point G (format: x,y): ")
     g = tuple(map(int, g_input.split(',')))
 
-    print(f"\nThe elliptic curve equation is: y² = x³ + {a}x + {b} mod {p}")
-    print(f"Generator point G = {g}\n")
-
     def generate_subgroup(G):
         subgroup = []
         P = G
@@ -24,10 +21,6 @@ def main():
     for i, P in subgroup:
         print(f"{i}G = {P}")
 
-    # ========== Key Exchange ==========
-    print("\nKey Exchange Phase:")
-    print("------------------")
-
     alpha = int(input("Enter Alice's private key alpha (1 ≤ alpha ≤ n-1): "))
     pa = point_multiply(alpha, g, a, p)
     print(f"Alice's public key P_A = alpha * G = {pa}")
@@ -43,12 +36,7 @@ def main():
     print(f"Bob computes shared key: beta * P_A = {bob_shared_key}")
     print("Key exchange successful!" if alice_shared_key == bob_shared_key else "Key exchange failed!")
 
-    # ========== Encryption/Decryption ==========
-    print("\nEncryption/Decryption Phase:")
-    print("---------------------------")
-
     pm = get_valid_point(p, a, b)
-
     # alpha_enc = int(input("Enter Alice's random integer alpha for encryption: "))
     c1 = point_multiply(alpha, g, a, p)
     alpha_pb = point_multiply(alpha, pb, a, p)
