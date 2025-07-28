@@ -1,115 +1,68 @@
 import random
-from math import gcd
 
-def is_prime(n, k=5):
-    """Miller-Rabin primality test"""
-    if n <= 1:
-        return False
-    elif n <= 3:
-        return True
-    elif n % 2 == 0:
-        return False
-    
-    # Write n as d*2^s + 1
-    d = n - 1
-    s = 0
-    while d % 2 == 0:
-        d //= 2
-        s += 1
-    
-    for _ in range(k):
-        a = random.randint(2, n - 2)
-        x = pow(a, d, n)
-        if x == 1 or x == n - 1:
-            continue
-        for __ in range(s - 1):
-            x = pow(x, 2, n)
-            if x == n - 1:
-                break
-        else:
-            return False
-    return True
-
-def generate_prime(bits):
-    """Generate a large prime number"""
-    while True:
-        p = random.getrandbits(bits)
-        p |= (1 << bits - 1) | 1  # Set MSB and LSB to ensure size and oddness
-        if is_prime(p):
-            return p
+def gcd(a, b):
+    while b != 0:
+        a, b = b, a % b
+    return a
 
 def extended_gcd(a, b):
-    """Extended Euclidean Algorithm"""
     if a == 0:
         return (b, 0, 1)
     else:
         g, y, x = extended_gcd(b % a, a)
         return (g, x - (b // a) * y, y)
 
-def modinv(a, m):
-    """Modular inverse using Extended Euclidean Algorithm"""
-    g, x, y = extended_gcd(a, m)
+def mod_inverse(e, phi):
+    g, x, y = extended_gcd(e, phi)
     if g != 1:
         raise Exception('Modular inverse does not exist')
     else:
-        return x % m
+        return x % phi
 
-def generate_keys(bits=64):
-    """Generate RSA public and private keys"""
-    # Choose two large primes
-    # p = generate_prime(bits // 2)
-    # q = generate_prime(bits // 2)
+def is_prime(n):
+    if n < 2:
+        return False
+    for i in range(2, int(n ** 0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
 
-    p=int(input("Enter the value of p"))
-    q=int(input("Enter the value of q"))
-    
-    # Ensure p and q are different
-    # while p == q:
-    #     q = generate_prime(bits // 2)
-    
+def generate_keypair(p, q):
+    if not (is_prime(p) and is_prime(q)):
+        raise ValueError("Both numbers must be prime.")
+    elif p == q:
+        raise ValueError("p and q cannot be equal.")
+
     n = p * q
     phi = (p - 1) * (q - 1)
-    
-    # Choose e such that 1 < e < phi and gcd(e, phi) = 1
-    e = random.randint(2, phi - 1)
+
+    e = random.randrange(2, phi)
     while gcd(e, phi) != 1:
-        e = random.randint(2, phi - 1)
-    
-    # Compute d, the modular inverse of e
-    d = modinv(e, phi)
-    
-    # Public key: (e, n), Private key: (d, n)
+        e = random.randrange(2, phi)
+    d = mod_inverse(e, phi)
     return ((e, n), (d, n))
 
-def encrypt(message, public_key):
-    """Encrypt message using public key"""
-    e, n = public_key
-    # Convert each character to ASCII and encrypt
-    encrypted = [pow(ord(char), e, n) for char in message]
-    return encrypted
+def encrypt(pk, plaintext):
+    key, n = pk
+    cipher = [pow(ord(char), key, n) for char in plaintext]
+    return cipher
 
-def decrypt(encrypted, private_key):
-    """Decrypt message using private key"""
-    d, n = private_key
-    # Decrypt each number to character
-    decrypted = [chr(pow(num, d, n)) for num in encrypted]
-    return ''.join(decrypted)
+def decrypt(pk, ciphertext):
+    key, n = pk
+    plain = [chr(pow(char, key, n)) for char in ciphertext]
+    return ''.join(plain)
 
-# Example usage
-if __name__ == "__main__":
-    # Generate keys (small bits for demo, use >=1024 in practice)
-    public_key, private_key = generate_keys(32)
-    print("Public Key (e, n):", public_key)
-    print("Private Key (d, n):", private_key)
-    
-    # Encrypt a message
-    # message = "Hello RSA!"
-    message = input("Enter the message : ")
-    print("\nOriginal Message:", message)
-    
-    encrypted = encrypt(message, public_key)
-    print("Encrypted Message:", encrypted)
-    
-    # Decrypt the message
-    decrypted = decrypt(encrypted, private_key)
-    print("Decrypted Message:", decrypted)
+p = int(input("Enter a prime number p: "))
+q = int(input("Enter a prime number q: "))
+
+public, private = generate_keypair(p, q)
+print(f"\nPublic key: {public}")
+print(f"Private key: {private}")
+
+message = input("Enter your message : ")
+
+encrypted_msg = encrypt(public, message)
+print(f"\nDecrypted message: {encrypted_msg}")
+
+decrypted_msg = decrypt(private, encrypted_msg)
+print(f"\nDecrypted message: {decrypted_msg}")
